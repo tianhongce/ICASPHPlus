@@ -45,7 +45,7 @@ void GLWidget::initWidget()
 	ratio = 0.5;
 	//ballRadius = 0.01;	//粒子半径
 	timeStep = 10;		//帧间隔,ms
-
+	
 	lightPosition[0] = 0.0f;	//光源位置,xyz,dis
 	lightPosition[1] = 1.5f;
 	lightPosition[2] = 0.0f;

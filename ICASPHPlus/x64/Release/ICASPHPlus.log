@@ -1,33 +1,3 @@
-﻿  Moc'ing ICASPHPlus.h...
-  Uic'ing ICASPHPlus.ui...
-  Moc'ing glwidget.h...
-  Rcc'ing ICASPHPlus.qrc...
-RCC : warning : No resources in 'D:\code\ICASPHPlus\ICASPHPlus\ICASPHPlus.qrc'.
-  
-  qrc_ICASPHPlus.cpp
-  moc_glwidget.cpp
-  moc_ICASPHPlus.cpp
-  glwidget.cpp
-  ICASPHPlus.cpp
+﻿  glwidget.cpp
 glwidget.cpp(96): warning C4838: 从“double”转换到“GLfloat”需要收缩转换
-  main.cpp
-  Boundary.cpp
-  FunctionKit.cpp
-  GridCell.cpp
-d:\code\icasphplus\icasphplus\sph\functionkit.cpp(122): warning C4715: “FunctionKit::CalculateGridCellNum”: 不是所有的控件路径都返回值
-  HashGridList.cpp
-  IISPHComputer.cpp
-  IISPHFluidObject.cpp
-  IISPHParticle.cpp
-  Matrix3f.cpp
-  ParticleObject.cpp
-  ShareData.cpp
-  SPHKernel.cpp
-  SPHManager.cpp
-  Vector3f.cpp
-  Vector3i.cpp
-  WCSPHComputer.cpp
-  WCSPHFluidObject.cpp
-d:\code\icasphplus\icasphplus\sph\vector3f.cpp(120): warning C4715: “Vector3f::operator[]”: 不是所有的控件路径都返回值
-  WCSPHParticle.cpp
   ICASPHPlus.vcxproj -> D:\code\ICASPHPlus\x64\Release\ICASPHPlus.exe
