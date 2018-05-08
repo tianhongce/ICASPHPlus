@@ -1,22 +1,20 @@
 ﻿  Moc'ing ICASPHPlus.h...
-  拒绝访问。
   Uic'ing ICASPHPlus.ui...
   Moc'ing glwidget.h...
-  '"D:\OfficeProgram\QT\5.9\msvc2015_64\bin\moc.exe"' 不是内部或外部命令，也不是可运行的程序
-  或批处理文件。
   Rcc'ing ICASPHPlus.qrc...
-RCC : warning : No resources in 'F:\ICSPHRigidCouple\ICASPHPlus\ICASPHPlus\ICASPHPlus.qrc'.
+RCC : warning : No resources in 'D:\code\ICASPHPlus\ICASPHPlus\ICASPHPlus.qrc'.
   
   qrc_ICASPHPlus.cpp
   moc_glwidget.cpp
   moc_ICASPHPlus.cpp
   glwidget.cpp
   ICASPHPlus.cpp
+glwidget.cpp(96): warning C4838: 从“double”转换到“GLfloat”需要收缩转换
   main.cpp
   Boundary.cpp
   FunctionKit.cpp
   GridCell.cpp
-f:\icsphrigidcouple\icasphplus\icasphplus\sph\functionkit.cpp(122): warning C4715: “FunctionKit::CalculateGridCellNum”: 不是所有的控件路径都返回值
+d:\code\icasphplus\icasphplus\sph\functionkit.cpp(122): warning C4715: “FunctionKit::CalculateGridCellNum”: 不是所有的控件路径都返回值
   HashGridList.cpp
   IISPHComputer.cpp
   IISPHFluidObject.cpp
@@ -29,8 +27,7 @@ f:\icsphrigidcouple\icasphplus\icasphplus\sph\functionkit.cpp(122): warning C471
   Vector3f.cpp
   Vector3i.cpp
   WCSPHComputer.cpp
-f:\icsphrigidcouple\icasphplus\icasphplus\sph\vector3f.cpp(120): warning C4715: “Vector3f::operator[]”: 不是所有的控件路径都返回值
   WCSPHFluidObject.cpp
+d:\code\icasphplus\icasphplus\sph\vector3f.cpp(120): warning C4715: “Vector3f::operator[]”: 不是所有的控件路径都返回值
   WCSPHParticle.cpp
-glwidget.cpp(96): warning C4838: 从“double”转换到“GLfloat”需要收缩转换
-  ICASPHPlus.vcxproj -> F:\ICSPHRigidCouple\ICASPHPlus\x64\Release\ICASPHPlus.exe
+  ICASPHPlus.vcxproj -> D:\code\ICASPHPlus\x64\Release\ICASPHPlus.exe

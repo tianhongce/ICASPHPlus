@@ -19,7 +19,7 @@ GLWidget::~GLWidget()
 void GLWidget::initWidget()
 {
 	//调用当前初始化
-	cout << "1" << endl;
+	cout << "1：initWidget" << endl;
 	sphManager.Initialize();
 
 	isMouseDown = false;			//鼠标是否按下
