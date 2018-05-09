@@ -52,7 +52,7 @@ void IISPHComputer::Computation()
 	MapParticleToGrid();
 	//完成一次IISPH计算
 	//自适应分裂
-	ComputePtoSandMopt();
+	//ComputePtoSandMopt();
 	//ProcessMergeandSplit();
 
 
