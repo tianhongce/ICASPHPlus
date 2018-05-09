@@ -8,6 +8,10 @@ void IISPHFluidObject::ClearNeighborList()
 		//注意仅仅清除当前邻居列表里的列表
 		for (int i = 0; i < IISPH_ParticleNum; i++)
 		{
+			if (particleList[i] == NULL)
+			{
+				continue;
+			}
 			particleList[i]->fluidNeighbors.clear();
 		}
 	}
@@ -20,6 +24,10 @@ void IISPHFluidObject::ClearFluidBoundaryNeighborList()
        #pragma omp for schedule(static) 
 		for (int i = 0; i < IISPH_ParticleNum; i++)
 		{
+			if (particleList[i] == NULL)
+			{
+				continue;
+			}
 			particleList[i]->boundaryNeighbors.clear();
 		}
 	}
@@ -156,6 +164,10 @@ void IISPHFluidObject::InitialiseParticleDensity()
 	//将水体所有粒子的密度设置为水体的初始密度
 	for (int i = 0; i < particleList.size(); i++)
 	{
+		if (particleList[i] == NULL)
+		{
+			continue;
+		}
 		particleList[i]->density = IISPH_RestDensity;
 		//！！！！！
 		particleList[i]->lastDensity = IISPH_RestDensity;
@@ -170,6 +182,10 @@ void IISPHFluidObject::UpdateParticleHashValue()
         #pragma omp for schedule(static) 
 		for (int i = 0; i < particleList.size(); i++)
 		{
+			if (particleList[i] == NULL)
+			{
+				continue;
+			}
 			double cellLength = SharedData::GetCellLength(); //得到网格的大小
 			int hashCellNum = SharedData::GetHashCellNum();  //得到所有哈希网格数量
 			int hashValue = FunctionKit::PositionMapHash(particleList[i]->position, cellLength, hashCellNum, boundary.offset);

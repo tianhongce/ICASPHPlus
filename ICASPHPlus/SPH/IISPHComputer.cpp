@@ -52,7 +52,7 @@ void IISPHComputer::Computation()
 	MapParticleToGrid();
 	//完成一次IISPH计算
 	//自适应分裂
-	ComputePtoSandMopt();
+	//ComputePtoSandMopt();
 	//ProcessMergeandSplit();
 
 
@@ -75,6 +75,10 @@ void IISPHComputer::ProcessDensity()
         #pragma omp for schedule(static)  
 		for (int i = 0; i < (int)numParticles; i++)
 		{
+			if (fluidModel.particleList[i] == NULL)
+			{
+				continue;
+			}
 			double &density = fluidModel.particleList[i]->density;
 			double massi = fluidModel.particleList[i]->particleMass;
 			double supportRad = fluidModel.particleList[i]->particleSupportRad;
@@ -89,6 +93,10 @@ void IISPHComputer::ProcessDensity()
 			//////////////////////////////////////////////////////////////////////////
 			for (unsigned int j = 0; j < fluidNeighbors.size(); j++)
 			{
+				if (fluidNeighbors[j] == NULL)
+				{
+					continue;
+				}
 				Vector3f &xj = fluidNeighbors[j]->position;
 				double massj = fluidNeighbors[j]->particleMass;
 				density += massj * Poly6KernelOne::W(supportRad,xi - xj);
@@ -152,6 +160,10 @@ void IISPHComputer::ProcessViscosity()
         #pragma omp for schedule(static)  
 		for (int i = 0; i < (int)numParticles; i++)
 		{
+			if (fluidModel.particleList[i] == NULL)
+			{
+				continue;
+			}
 			Vector3f &xi = fluidModel.particleList[i]->position;
 			Vector3f &vi = fluidModel.particleList[i]->velocity;
 			//直接对加速度进行赋值
@@ -164,6 +176,10 @@ void IISPHComputer::ProcessViscosity()
 			//////////////////////////////////////////////////////////////////////////
 			for (unsigned int j = 0; j < fluidNeighbors.size(); j++)
 			{
+				if (fluidNeighbors[j] == NULL)
+				{
+					continue;
+				}
 				Vector3f &xj = fluidNeighbors[j]->position;
 				Vector3f &vj = fluidNeighbors[j]->velocity;
 
@@ -207,6 +223,10 @@ void IISPHComputer::ProcessIntegration()
         #pragma omp for schedule(static)  
 		for (int i = 0; i < (int)numParticles; i++)
 		{
+			if (fluidModel.particleList[i] == NULL)
+			{
+				continue;
+			}
 			fluidModel.particleList[i]->Intigration(boundary, fluidModel.IISPH_TimeStep);
 		}
 	}
@@ -219,6 +239,10 @@ void IISPHComputer::ClearAcceleration()
 	const Vector3f G(0.0, 0.0, gravity);
 	for (unsigned int i = 0; i < count; i++)
 	{
+		if (fluidModel.particleList[i] == NULL)
+		{
+			continue;
+		}
 		fluidModel.particleList[i]->acceleration = G;
 	}
 }
@@ -522,11 +546,19 @@ void IISPHComputer::UpdateFluidNeighborList()
 		//遍历当前所有粒子的列表
 		for (int i = 0; i < fluidModel.particleList.size(); i++)
 		{
+			if (fluidModel.particleList[i] == NULL)
+			{
+				continue;
+			}
 			//计算得到所有的临近的粒子
 			vector<IISPHParticle*> temp = ComputeNeighborParticle(fluidModel.particleList[i]);
 			//fluidModel.particleList[i]->fluidNeighbors =temp;
 			for (int j = 0; j < temp.size(); j++)
 			{
+				if (temp[j] == NULL)
+				{
+					continue;
+				}
 				//将临近的所有粒子装入对应的粒子邻居表当中
 				fluidModel.particleList[i]->fluidNeighbors.push_back(temp[j]);
 			}
@@ -543,10 +575,18 @@ void IISPHComputer::UpdateFluidBoundaryNeighborList()
         #pragma omp for schedule(static)
 		for (int i = 0; i < fluidModel.particleList.size(); i++)
 		{
+			if (fluidModel.particleList[i] == NULL)
+			{
+				continue;
+			}
 			//得到对应的流体粒子中的临近静态粒子列表
 			vector<StaticRigidParticle*> temp = ComputeNeighborBoundaryParticle(fluidModel.particleList[i]);
 			for (int j = 0; j < temp.size(); j++)
 			{
+				if (temp[j] == NULL)
+				{
+					continue;
+				}
 				//将对应的静态流体粒子装入到流体周围的静态粒子列表当中
 				fluidModel.particleList[i]->boundaryNeighbors.push_back(temp[j]);
 			}
@@ -578,6 +618,10 @@ void IISPHComputer::MapParticleToGrid()
 	hashGridList.ClearParticle();
 	for (int i = 0; i < fluidModel.particleList.size(); i++)
 	{
+		if (fluidModel.particleList[i] == NULL)
+		{
+			continue;
+		}
 		//如果超过当前的值，那么输出当前问题粒子的诸多问题
 		//if (fluidModel.particleList[i]->position.x < -0.6f || fluidModel.particleList[i]->position.y < -0.6f || fluidModel.particleList[i]->position.z < -0.6f)
 	/*	if(i==0)
@@ -613,6 +657,10 @@ void IISPHComputer::ProcessPredictAdvection()
         #pragma omp for schedule(static)  
 		for (int i = 0; i < (int)numParticles; i++)
 		{
+			if (fluidModel.particleList[i] == NULL)
+			{
+				continue;
+			}
 			//这里增加速度的值是粘性力施加的速度值
 			Vector3f &vel = fluidModel.particleList[i]->velocity;
 			const Vector3f &accel = fluidModel.particleList[i]->acceleration;
@@ -634,6 +682,10 @@ void IISPHComputer::ProcessPredictAdvection()
 			//////////////////////////////////////////////////////////////////////////
 			for (unsigned int j = 0; j < fluidNeighbors.size(); j++)
 			{
+				if (fluidNeighbors[j] == NULL)
+				{
+					continue;
+				}
 				Vector3f &xj = fluidNeighbors[j]->position;
 				dii -= fluidNeighbors[j]->particleMass / density2 * CubicKernelOne::gradW(supportRad, xi - xj);
 			}
@@ -643,6 +695,10 @@ void IISPHComputer::ProcessPredictAdvection()
 			//////////////////////////////////////////////////////////////////////////
 			for (unsigned int j = 0; j < boundaryNeighbors.size(); j++)
 			{
+				if (boundaryNeighbors[j] == NULL)
+				{
+					continue;
+				}
 				Vector3f &xj = boundaryNeighbors[j]->position;
 				dii -= boundaryNeighbors[j]->boundaryPsi / density2 * CubicKernelOne::gradW(supportRad, xi - xj);
 			}
@@ -656,6 +712,10 @@ void IISPHComputer::ProcessPredictAdvection()
         #pragma omp for schedule(static)  
 		for (int i = 0; i < (int)numParticles; i++)
 		{
+			if (fluidModel.particleList[i] == NULL)
+			{
+				continue;
+			}
 			const double &density = fluidModel.particleList[i]->density;
 			double &densityAdv = fluidModel.particleList[i]->density_adv;
 			densityAdv = density;
@@ -670,6 +730,10 @@ void IISPHComputer::ProcessPredictAdvection()
 			//////////////////////////////////////////////////////////////////////////
 			for (unsigned int j = 0; j < fluidNeighbors.size(); j++)
 			{
+				if (fluidNeighbors[j] == NULL)
+				{
+					continue;
+				}
 				Vector3f &xj = fluidNeighbors[j]->position;
 				Vector3f &vj = fluidNeighbors[j]->velocity;
 				densityAdv += h* fluidNeighbors[j]->particleMass * (vi - vj).Dot(CubicKernelOne::gradW(supportRad,xi - xj));
@@ -680,6 +744,10 @@ void IISPHComputer::ProcessPredictAdvection()
 			//////////////////////////////////////////////////////////////////////////
 			for (unsigned int j = 0; j < boundaryNeighbors.size(); j++)
 			{
+				if (boundaryNeighbors[j] == NULL)
+				{
+					continue;
+				}
 				Vector3f &xj = boundaryNeighbors[j]->position;
 				Vector3f &vj = boundaryNeighbors[j]->velocity;
 				densityAdv += h* boundaryNeighbors[j]->boundaryPsi * (vi - vj).Dot(CubicKernelOne::gradW(supportRad,xi - xj));
@@ -702,6 +770,10 @@ void IISPHComputer::ProcessPredictAdvection()
 			//////////////////////////////////////////////////////////////////////////
 			for (unsigned int j = 0; j < fluidNeighbors.size(); j++)
 			{
+				if (fluidNeighbors[j] == NULL)
+				{
+					continue;
+				}
 				Vector3f &xj = fluidNeighbors[j]->position;
 				// Compute d_ji
 				const Vector3f kernel = CubicKernelOne::gradW(supportRad, xi - xj);
@@ -714,6 +786,10 @@ void IISPHComputer::ProcessPredictAdvection()
 			//////////////////////////////////////////////////////////////////////////
 			for (unsigned int j = 0; j < boundaryNeighbors.size(); j++)
 			{
+				if (boundaryNeighbors[j] == NULL)
+				{
+					continue;
+				}
 				Vector3f &xj = boundaryNeighbors[j]->position;
 				const Vector3f kernel = CubicKernelOne::gradW(supportRad, xi - xj);
 				Vector3f dji = dpi * kernel;
@@ -750,6 +826,10 @@ void IISPHComputer::ProcessPressureSolve()
             #pragma omp for schedule(static)  
 			for (int i = 0; i < (int)numParticles; i++)
 			{
+				if (fluidModel.particleList[i] == NULL)
+				{
+					continue;
+				}
 				Vector3f &dij_pj = fluidModel.particleList[i]->dij_pj;
 				dij_pj.Zero();
 				Vector3f &xi = fluidModel.particleList[i]->position;
@@ -763,6 +843,10 @@ void IISPHComputer::ProcessPressureSolve()
 				//////////////////////////////////////////////////////////////////////////
 				for (unsigned int j = 0; j < fluidNeighbors.size(); j++)
 				{
+					if (fluidNeighbors[j] == NULL)
+					{
+						continue;
+					}
 					Vector3f &xj = fluidNeighbors[j]->position;
 					const double &densityj = fluidNeighbors[j]->density;
 					dij_pj -= fluidNeighbors[j]->particleMass / (densityj*densityj) * fluidNeighbors[j]->lastPressure * CubicKernelOne::gradW(supportRad, xi - xj);
@@ -776,6 +860,10 @@ void IISPHComputer::ProcessPressureSolve()
             #pragma omp for schedule(static)  
 			for (int i = 0; i < (int)numParticles; i++)
 			{
+				if (fluidModel.particleList[i] == NULL)
+				{
+					continue;
+				}
 				const double &aii = fluidModel.particleList[i]->aii;
 				const double density = fluidModel.particleList[i]->density;
 				Vector3f &xi = fluidModel.particleList[i]->position;
@@ -790,6 +878,10 @@ void IISPHComputer::ProcessPressureSolve()
 				//////////////////////////////////////////////////////////////////////////
 				for (unsigned int j = 0; j < fluidNeighbors.size(); j++)
 				{
+					if (fluidNeighbors[j] == NULL)
+					{
+						continue;
+					}
 					Vector3f &xj = fluidNeighbors[j]->position;
 					Vector3f &d_jk_pk = fluidNeighbors[j]->dij_pj;
 					// Compute \sum_{k \neq i} djk*pk
@@ -807,6 +899,10 @@ void IISPHComputer::ProcessPressureSolve()
 				//////////////////////////////////////////////////////////////////////////
 				for (unsigned int j = 0; j < boundaryNeighbors.size(); j++)
 				{
+					if (boundaryNeighbors[j] == NULL)
+					{
+						continue;
+					}
 					Vector3f &xj = boundaryNeighbors[j]->position;
 					sum += boundaryNeighbors[j]->boundaryPsi * fluidModel.particleList[i]->dij_pj.Dot(CubicKernelOne::gradW(supportRad, xi - xj));
 				}
@@ -836,6 +932,10 @@ void IISPHComputer::ProcessPressureSolve()
 
 		for (int i = 0; i < (int)numParticles; i++)
 		{
+			if (fluidModel.particleList[i] == NULL)
+			{
+				continue;
+			}
 			const double &pi = fluidModel.particleList[i]->pressure;
 			double &lastPi = fluidModel.particleList[i]->lastPressure;
 			lastPi = pi;
@@ -860,6 +960,10 @@ void IISPHComputer::ComputePressureAccels()
         #pragma omp for schedule(static)  
 		for (int i = 0; i < (int)numParticles; i++)
 		{
+			if (fluidModel.particleList[i] == NULL)
+			{
+				continue;
+			}
 			Vector3f &xi = fluidModel.particleList[i]->position;
 			const double &density_i = fluidModel.particleList[i]->density;
 
@@ -876,6 +980,10 @@ void IISPHComputer::ComputePressureAccels()
 			//////////////////////////////////////////////////////////////////////////
 			for (unsigned int j = 0; j < fluidNeighbors.size(); j++)
 			{
+				if (fluidNeighbors[j] == NULL)
+				{
+					continue;
+				}
 				Vector3f &xj = fluidNeighbors[j]->position;
 				// Pressure 
 				const double &density_j = fluidNeighbors[j]->density;
@@ -888,6 +996,10 @@ void IISPHComputer::ComputePressureAccels()
 			//////////////////////////////////////////////////////////////////////////
 			for (unsigned int j = 0; j < boundaryNeighbors.size(); j++)
 			{
+				if (boundaryNeighbors[j] == NULL)
+				{
+					continue;
+				}
 				Vector3f &xj = boundaryNeighbors[j]->position;
 				const Vector3f a = boundaryNeighbors[j]->boundaryPsi * (dpi)* CubicKernelOne::gradW(supportRad,xi - xj);
 				ai -= a;
@@ -906,6 +1018,10 @@ void IISPHComputer::ComputePressureAccels2()
 #pragma omp for schedule(static)  
 		for (int i = 0; i < (int)numParticles; i++)
 		{
+			if (fluidModel.particleList[i] == NULL)
+			{
+				continue;
+			}
 			Vector3f &xi = fluidModel.particleList[i]->position;
 			const double &density_i = fluidModel.particleList[i]->density;
 
@@ -924,6 +1040,10 @@ void IISPHComputer::ComputePressureAccels2()
 			//////////////////////////////////////////////////////////////////////////
 			for (unsigned int j = 0; j < fluidNeighbors.size(); j++)
 			{
+				if (fluidNeighbors[j] == NULL)
+				{
+					continue;
+				}
 				Vector3f &xj = fluidNeighbors[j]->position;
 				// Pressure 
 				const double &density_j = fluidNeighbors[j]->density;
@@ -937,6 +1057,10 @@ void IISPHComputer::ComputePressureAccels2()
 			//////////////////////////////////////////////////////////////////////////
 			for (unsigned int j = 0; j < boundaryNeighbors.size(); j++)
 			{
+				if (boundaryNeighbors[j] == NULL)
+				{
+					continue;
+				}
 				Vector3f &xj = boundaryNeighbors[j]->position;
 				const Vector3f a = boundaryNeighbors[j]->boundaryPsi * (dpi)* CubicKernelOne::gradW(supportRad, xi - xj);
 				ai -= a;
@@ -966,6 +1090,10 @@ void IISPHComputer::ClassifyParticle()
         #pragma omp for schedule(static)  
 		for (int i=0; i< fluidModel.particleList.size(); i++)
 		{
+			if (fluidModel.particleList[i] == NULL)
+			{
+				continue;
+			}
 			//得到当前粒子的质量
 			double massi = fluidModel.particleList[i]->particleMass;
 			//得到当前粒子的最佳质量
@@ -1008,6 +1136,10 @@ void IISPHComputer::ComputeOptMass()
 		//遍历当前所有粒子的列表，计算得到每一个粒子的最佳质量
 		for (int i = 0; i < fluidModel.particleList.size(); i++)
 		{
+			if (fluidModel.particleList[i] == NULL)
+			{
+				continue;
+			}
 			double& mopt = fluidModel.particleList[i]->mopt;
 			double distance = fluidModel.particleList[i]->distance;
 			//计算得到当前粒子的最优质量
@@ -1024,6 +1156,10 @@ void IISPHComputer::ComputeO()
         #pragma omp for schedule(static) 
 		for (int i = 0; i < fluidModel.particleList.size(); i++)
 		{
+			if (fluidModel.particleList[i] == NULL)
+			{
+				continue;
+			}
 			//得到Ω的引用
 			double& O = fluidModel.particleList[i]->O;
 			//得到当前粒子的位置
@@ -1048,6 +1184,10 @@ void IISPHComputer::ComputeO()
 		        //在此基础上，运算W针对邻居的偏导数
 				for (int j = 0; j < fluidNeibors.size(); j++)
 				{
+					if (fluidNeibors[j] == NULL)
+					{
+						continue;
+					}
 					//得到邻居的粒子质量
 					Vector3f xj = fluidNeibors[j]->position;
 					const double mj = fluidNeibors[j]->particleMass;
@@ -1070,6 +1210,10 @@ void IISPHComputer::BlendDensity()
         #pragma omp for schedule(static)
 		for (int i = 0; i < particleNum; i++)
 		{
+			if (fluidModel.particleList[i] == NULL)
+			{
+				continue;
+			}
 			//得到当前粒子是否是更新后的第一帧
 			const bool newUpdate = fluidModel.particleList[i]->NEW_UPDATE;
 			if (newUpdate)
@@ -1095,6 +1239,10 @@ void IISPHComputer::BlendVelocity()
 	{
 		for (int i = 0; i < particleNum; i++)
 		{
+			if (fluidModel.particleList[i] == NULL)
+			{
+				continue;
+			}
 			//得到当前是否是第一次搞的
 			bool& newUpdate = fluidModel.particleList[i]->NEW_UPDATE;
 			if (newUpdate)
@@ -1124,6 +1272,10 @@ void IISPHComputer::UpdateBlendFactor()
         #pragma omp for schedule(static)
 		for (int i = 0; i < particleNum; i++)
 		{
+			if (fluidModel.particleList[i] == NULL)
+			{
+				continue;
+			}
 			//如果当前粒子>0 那么就减0.1
 			if (fluidModel.particleList[i]->β > 0 + d)
 			{
@@ -1145,6 +1297,10 @@ void IISPHComputer::ComputePtoSandMopt()
 	//遍历所有粒子
 	for (int i = 0; i < (int)numParticles; i++)
 	{
+		if (fluidModel.particleList[i] == NULL)
+		{
+			continue;
+		}
 		double _x = 0.0;
 		double _y = 0.0;
 		double _z = 0.0;
@@ -1161,6 +1317,10 @@ void IISPHComputer::ComputePtoSandMopt()
 		//计算distance field
 		for (int j = 0; j < fluidModel.particleList[i]->fluidNeighbors.size(); j++)
 		{
+			if (fluidModel.particleList[i]->fluidNeighbors[j] == NULL)
+			{
+				continue;
+			}
 			pj = fluidModel.particleList[i]->fluidNeighbors[j];
 			double rj = fluidModel.particleList[i]->fluidNeighbors[j]->particleRad;
 			double Rj = fluidModel.particleList[i]->fluidNeighbors[j]->particleSupportRad;
@@ -1171,6 +1331,10 @@ void IISPHComputer::ComputePtoSandMopt()
 			double dw = 0.0;
 			for (int k = 0; k < fluidModel.particleList[i]->fluidNeighbors.size(); k++)
 			{
+				if (fluidModel.particleList[i]->fluidNeighbors[k] == NULL)
+				{
+					continue;
+				}
 				pk = fluidModel.particleList[i]->fluidNeighbors[k];
 
 				double dws = abs(sqrt(pow(pk->position.x - pi->position.x, 2) + pow(pk->position.y - pi->position.y, 2) + pow(pk->position.z - pi->position.z, 2))) / Rj;
@@ -1228,6 +1392,10 @@ void IISPHComputer::ComputePtoSandMopt()
 			double tmpDIST = -18.0*pi->particleRad;
 			for (int m = 0; m < pi->fluidNeighbors.size(); m++)
 			{
+				if (pi->fluidNeighbors[m] == NULL)
+				{
+					continue;
+				}
 				IISPHParticle *pm = pi->fluidNeighbors[m];
 
 				if (0 == pm->mark || 10 == pm->mark)
@@ -1266,6 +1434,10 @@ void IISPHComputer::ComputePtoSandMopt()
 	//cout << "minnnnn: " << fineDistance << endl;
 	for (int i = 0; i < fluidModel.particleList.size(); i++)
 	{
+		if (fluidModel.particleList[i] == NULL)
+		{
+			continue;
+		}
 		IISPHParticle *pi = fluidModel.particleList[i];
 		if (pi->disToSurface <= 0.85*pi->particleRad)
 		{
@@ -1292,14 +1464,20 @@ void IISPHComputer::ProcessMergeandSplit()
 			continue;
 		}
 
-		ProcessNeighborList();//搜索邻居方法需要改，加判断，只有指针指向不为空的 才添加到粒子i的邻居内部；或者重写一个方法ProcessNeighborList(int i),
+		//ProcessNeighborList();//搜索邻居方法需要改，加判断，只有指针指向不为空的 才添加到粒子i的邻居内部；或者重写一个方法ProcessNeighborList(int i),
 							  //在每次遍历粒子列表的时候都要添加指针不为空的判断；
 		IISPHParticle *pi = fluidModel.particleList[i];
-		double m_rel = pi->particleMass / pi->mopt;
 
+		//if (pi->mopt > 0.05)
+		//{
+		//	cout << i << ": " << pi->mopt << endl;
+		//}
+		double m_rel = pi->particleMass / pi->mopt;
+		//cout << "mrel: " << m_rel <<"--"<< (m_rel == 0.5) << endl;
 		//对S粒子进行处理
-		if (m_rel < 0.5)
+		if (m_rel <= 0.6)
 		{
+			cout << "S粒子" << endl;
 			//S粒子
 			int num_S_neighbor = 0;
 			for (int j = 0; j < pi->fluidNeighbors.size(); j++)

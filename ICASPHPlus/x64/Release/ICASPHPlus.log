@@ -1,3 +1,2 @@
-﻿  glwidget.cpp
-glwidget.cpp(96): warning C4838: 从“double”转换到“GLfloat”需要收缩转换
+﻿  IISPHComputer.cpp
   ICASPHPlus.vcxproj -> D:\code\ICASPHPlus\x64\Release\ICASPHPlus.exe

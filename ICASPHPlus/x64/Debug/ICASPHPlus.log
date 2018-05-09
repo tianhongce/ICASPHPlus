@@ -1,16 +1,2 @@
-﻿  moc_ICASPHPlus.cpp
-  moc_glwidget.cpp
-  ICASPHPlus.cpp
-  GridCell.cpp
-  HashGridList.cpp
-  IISPHComputer.cpp
-  IISPHFluidObject.cpp
-  IISPHParticle.cpp
-  SPHManager.cpp
-  WCSPHComputer.cpp
-  WCSPHFluidObject.cpp
-  glwidget.cpp
-  main.cpp
-glwidget.cpp(96): warning C4838: 从“double”转换到“GLfloat”需要收缩转换
-  ICASPHPlus.vcxproj -> D:\code\ICASPHPlus\x64\Debug\ICASPHPlus.exe
+﻿  ICASPHPlus.vcxproj -> D:\code\ICASPHPlus\x64\Debug\ICASPHPlus.exe
   ICASPHPlus.vcxproj -> D:\code\ICASPHPlus\x64\Debug\ICASPHPlus.pdb (Full PDB)

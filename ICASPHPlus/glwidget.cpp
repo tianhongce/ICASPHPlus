@@ -463,7 +463,7 @@ void GLWidget::drawParticles()
 	if (sphManager.sphtype == SPH_TYPE::IISPH)
 	{
 		//ªÊ÷∆IISPH
-		int particleNumber = sphManager.iisphComputer.fluidModel.particleList.size()/2;
+		int particleNumber = sphManager.iisphComputer.fluidModel.particleList.size();
 		for (unsigned int i = 0; i < particleNumber; i++)
 		{
 			float x = (float)(sphManager.iisphComputer.fluidModel.particleList[i]->position.x - woffset);

@@ -16,9 +16,9 @@ public:
 	double boundaryOriginX = 0;
 	double boundaryOriginY = 0;
 	double boundaryOriginZ = 0; //用于边界测试的边界起始点
-	double boundaryWidth = 2;
-	double boundaryLength = 4;
-	double boundaryHeight = 2;  //用于边界测试的边界长宽高
+	double boundaryWidth = 1;
+	double boundaryLength = 2;
+	double boundaryHeight = 1;  //用于边界测试的边界长宽高
 	//避免访问非法内存的解决方案
 	double  offset =  0.6f;               //用于生成网格的部分的偏移，一般为两个网格的长度
 	double gridBoundaryOriginX = -0.5f;
@@ -28,7 +28,7 @@ public:
 	double gridBoundaryLength = 5.0f;
 	double gridBoundaryHeight = 3.0f;   //用于生成网格的长宽高
 
-	double pRad = 0.075f;
+	double pRad = 0.025f;
 public:
 	//构造析构函数
 	Boundary();
