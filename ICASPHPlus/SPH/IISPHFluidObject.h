@@ -44,6 +44,9 @@ public:
 	Vector3i FluidWLH;          //这个是水体初始化的时候，长宽高方向上有多少个粒子,只在初始化时候有用
 	double particleInitialPad = 0.075f;  //水体粒子的初始化半径，由于之后粒子的大小自适应，因此这个值只在初始化的时候有用
 
+	//流体表中含有流体粒子的个数
+	int numParticleObj;
+
 
 public:
 	//对当前水体进行初始化
@@ -67,4 +70,6 @@ public:
 	//通过刚体计算从而完成所有的边界粒子的更新
 	void AddRigidBodyObject(StaticRigidObject& rbo, const unsigned int numBoundaryParticles, vector<Vector3f> boundaryParticles);
 	void ComputeBoundaryPsi(RigidBodyParticleObject& bound);
+	//计算流体中粒子对象的个数
+	void ComputeNumParticleObj();
 };

@@ -2,16 +2,20 @@
 
 void IISPHFluidObject::ClearNeighborList()
 {
-    #pragma omp parallel default(shared)
+	//cout << "ClearNeighborList()" << endl;
+   // #pragma omp parallel default(shared)
 	{
-       #pragma omp for schedule(static) 
+   //    #pragma omp for schedule(static) 
 		//注意仅仅清除当前邻居列表里的列表
 		for (int i = 0; i < IISPH_ParticleNum; i++)
 		{
 			if (particleList[i] == NULL)
 			{
+				//cout << "test ClearNeighborList() i: " << i << endl;
 				continue;
 			}
+			//cout << "test ClearNeighborList() i: " << i << endl;
+			//cout << particleList[i] << endl;
 			particleList[i]->fluidNeighbors.clear();
 		}
 	}
@@ -176,6 +180,7 @@ void IISPHFluidObject::InitialiseParticleDensity()
 
 void IISPHFluidObject::UpdateParticleHashValue()
 {
+	cout << "fluidModel.UpdateParticleHashValue()" << endl;
 	//刷新当前粒子的哈希值
     #pragma omp parallel default(shared)
 	{
@@ -200,4 +205,21 @@ void IISPHFluidObject::ComputeParticleNum(int x, int y, int z)
 	particleList.resize(IISPH_ParticleNum);  //并且依据粒子数量刷新流体粒子邻居列表容量
 	//neighborList.resize(IISPH_ParticleNum);
 	//fluidBoundaryNeighborList.resize(IISPH_ParticleNum);
+}
+
+void IISPHFluidObject::ComputeNumParticleObj()
+{
+	numParticleObj = 0;
+	#pragma omp parallel default(shared)
+	{
+		#pragma omp for schedule(static) 
+		for (int i = 0; i < particleList.size(); i++)
+		{
+			if (particleList[i] == NULL)
+			{
+				continue;
+			}
+			numParticleObj = numParticleObj + 1;
+		}
+	}
 }

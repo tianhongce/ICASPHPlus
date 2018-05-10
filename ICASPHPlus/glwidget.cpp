@@ -19,7 +19,7 @@ GLWidget::~GLWidget()
 void GLWidget::initWidget()
 {
 	//调用当前初始化
-	cout << "1：initWidget" << endl;
+	cout << "1" << endl;
 	sphManager.Initialize();
 
 	isMouseDown = false;			//鼠标是否按下
@@ -45,7 +45,7 @@ void GLWidget::initWidget()
 	ratio = 0.5;
 	//ballRadius = 0.01;	//粒子半径
 	timeStep = 10;		//帧间隔,ms
-	
+
 	lightPosition[0] = 0.0f;	//光源位置,xyz,dis
 	lightPosition[1] = 1.5f;
 	lightPosition[2] = 0.0f;
@@ -60,7 +60,6 @@ void GLWidget::initWidget()
 	setFocusPolicy(Qt::StrongFocus);
 
 	/*****开始模拟*****/
-	
 	//timer.start(timeStep);
 	timer.stop();
 
@@ -69,7 +68,6 @@ void GLWidget::initWidget()
 	//timeFrame();
 
 	QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(timeFrame()));
-	//qDebug() << QString::fromLocal8Bit("当前线程id：") << QThread::currentThread();
 
 }
 
@@ -229,7 +227,7 @@ void GLWidget::timeFrame()
 		if (sphManager.sphtype==SPH_TYPE::IISPH)
 		{
 			ui->statusBar->showMessage(QString("FPS : %1 / s\t  Frame: %2 ms\t  ParticleNum: %3\t  Frames:%4").arg(frame).arg(frameSec)
-				.arg(sphManager.iisphComputer.fluidModel.particleList.size()).arg(sumFrame));
+				.arg(sphManager.iisphComputer.fluidModel.numParticleObj).arg(sumFrame));
 			time.restart();
 			frame = 0;
 		}
@@ -466,15 +464,16 @@ void GLWidget::drawParticles()
 		int particleNumber = sphManager.iisphComputer.fluidModel.particleList.size();
 		for (unsigned int i = 0; i < particleNumber; i++)
 		{
+			if (sphManager.iisphComputer.fluidModel.particleList[i] == NULL)
+			{
+				continue;
+			}
 			float x = (float)(sphManager.iisphComputer.fluidModel.particleList[i]->position.x - woffset);
 			float y = (float)(sphManager.iisphComputer.fluidModel.particleList[i]->position.z - hoffset);
 			float z = (float)(sphManager.iisphComputer.fluidModel.particleList[i]->position.y - loffset);
 			glPushMatrix();
 			glTranslatef(x * ratio, y * ratio, z * ratio);
-			double rrr = pow(sphManager.iisphComputer.fluidModel.particleList[i]->mopt*1.25 / sphManager.iisphComputer.fluidModel.particleList[i]->density, double(1.0 / 3.0))*0.5;
-			//cout << sphManager.iisphComputer.fluidModel.particleList[i]->mopt << endl;
 			gluSphere(quadricObj, sphManager.iisphComputer.fluidModel.particleList[i]->particleRad*ratio, 16, 16);
-			//gluSphere(quadricObj, rrr*ratio, 16, 16);
 			glPopMatrix();
 		}
 	}
