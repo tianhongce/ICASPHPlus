@@ -30,7 +30,7 @@ public:
 	double pressure;
 	double lastPressure;
 	//依据粒子当前的大小动态的检索周围的网格
-	int gridCellNum = 0;
+	int gridCellNum ;
 
 	//add
 	double distValue;
@@ -74,7 +74,7 @@ public:
 		pressure = 0.0;
 		lastPressure = 0.0;
 		pressureAcceleration.Zero();
-
+		gridCellNum = 0;
 		//无限自适应的扩展属性初始化
 		distance = 0.0f;
 		mark = 0.0f;

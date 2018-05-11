@@ -20,7 +20,9 @@ void IISPHParticle::InitializationPVS(Vector3f pos, int v, double mass, double d
 	particleRad = pow(mass*1.25 / density, double(1.0 / 3.0))*0.5;
 	particleMass = mass; //这里的1000是静止密度
 	particleSupportRad = particleRad * 4;
+	cout << "InitializationPVS中求出来的particleRad： "<<particleRad << endl;
 	gridCellNum = FunctionKit::CalculateGridCellNum(particleRad);
+	cout << "InitializationPVS中求出来的gridCellNum： "<< gridCellNum << endl;
 }
 
 IISPHParticle & IISPHParticle::operator=(IISPHParticle & a)

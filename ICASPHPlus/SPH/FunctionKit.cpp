@@ -79,7 +79,7 @@ int FunctionKit::CalculateGridCellNum(double radius)
 {
 	double d = 0.00001;
 	//当前只需要检查一个单位的周围网格
-	if (abs(radius - 0.025) < d)
+	if (radius < 0.025||abs(radius - 0.025) < d)
 	{
 		return 1;
 	}

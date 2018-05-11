@@ -34,7 +34,7 @@ public:
 	bool isShowDisField;
 	bool isShowSurface;
 	bool isShowHashGrid;
-	bool isShowBoundaryParticles;
+	bool isShowBoundaryParticles = false;
 
 	//计算模型
 	SPHManager sphManager;                 //SPH的管理者
