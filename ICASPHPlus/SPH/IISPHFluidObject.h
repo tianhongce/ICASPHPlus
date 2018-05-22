@@ -23,9 +23,9 @@ public:
 	int    IISPH_ParticleNum;                 //粒子数量需要计算出来
 
 	//水体渲染的初始信息
-	double IISPH_FluidWitdth = 1.0f;
-	double IISPH_FluidLength = 1.0f;
-	double IISPH_FluidHeight = 1.0f;          //水体的大小
+	double IISPH_FluidWitdth = 1.0;
+	double IISPH_FluidLength = 1.0;
+	double IISPH_FluidHeight = 1.0;          //水体的大小
 	double IISPH_OriginX = 0.25f;
 	double IISPH_OriginY = 0.25f;
 	double IISPH_OriginZ = 0.075f;              //水体的起始渲染位置									

@@ -91,6 +91,41 @@ public:
 		boundaryNeighbors.resize(0);
 
 	}
+	IISPHParticle(IISPHParticle &a)
+	{
+		position = a.position;
+		velocity = a.velocity;
+		acceleration = a.acceleration;
+		particleRad = a.particleRad;
+		particleSupportRad = particleRad*4.0;
+		particleMass = a.particleMass;
+		density = a.density;
+		viscosity = a.viscosity;
+		pressureAcceleration = a.pressureAcceleration;
+		hashIndex = a.hashIndex;
+
+		//IISPH属性初始化
+		aii = a.aii;
+		dii = a.dii;
+		dij_pj = a.dij_pj;
+		density_adv = a.density_adv;
+		pressure = a.pressure;
+		lastPressure = a.pressure;
+		gridCellNum = a.gridCellNum;
+		//无限自适应的扩展属性初始化
+		distance = 0;
+		mark = 0;
+		mopt = 0;
+		mark = 0;
+		O = 0;
+		pt = PARTICLE_TYPE::S;
+		lastDensity = a.density;
+		lastVelocity = a.velocity;
+		β = 0;
+		//临近表扩展
+		fluidNeighbors = a.fluidNeighbors;
+		boundaryNeighbors = a.boundaryNeighbors;
+	}
 	~IISPHParticle() {}
 	void Initialization(Vector3f position, int v, double radius); //对粒子进行初始化更新
 	void InitializationPVS(Vector3f position, int v, double mass , double density);
@@ -98,4 +133,5 @@ public:
 	void Intigration(Boundary bound, double timeStep);       //依据加速度对粒子的速度和位置进行积分求值
 	void ParticlePositionCorrection(Boundary bound);               //对当前粒子的位置进行校正
 
+	bool isLegal();
 };

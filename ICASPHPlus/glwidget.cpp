@@ -455,7 +455,7 @@ void GLWidget::drawParticles()
 	GLUquadricObj *quadricObj = gluNewQuadric();
 	gluQuadricDrawStyle(quadricObj, GLU_SMOOTH);
 
-	//粒子颜色
+	////粒子颜色
 	glColor4f(0.5, 0.55, 0.7, 0.9);
 	glPushMatrix();
 	if (sphManager.sphtype == SPH_TYPE::IISPH)
@@ -464,6 +464,10 @@ void GLWidget::drawParticles()
 		int particleNumber = sphManager.iisphComputer.fluidModel.particleList.size();
 		for (unsigned int i = 0; i < particleNumber; i++)
 		{
+
+			////粒子颜色
+			//glColor4f(1.0, 0.0, 0.2, 1.0);;
+
 			if (sphManager.iisphComputer.fluidModel.particleList[i] == NULL)
 			{
 				continue;

@@ -35,8 +35,8 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	double baseDistance;       //最远的距离
 	double fineDistance;//最近距离
-	double baseMass = 0.2f;           //基础的质量
-	double fineMass = 0.025f;           //最小的质量
+	double baseMass = 50;           //最大的质量
+	double fineMass = 0.05;           //最小的质量
 	double adaptivityFactor = fineMass/baseMass;   //自适应因子
 
 

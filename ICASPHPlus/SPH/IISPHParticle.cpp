@@ -49,7 +49,7 @@ IISPHParticle & IISPHParticle::operator=(IISPHParticle & a)
 	gridCellNum = a.gridCellNum;
 
 	//无限自适应的扩展属性初始化
-	distance = a.density;
+	distance = a.distance;
 	mark = a.mark;
 	mopt = a.mopt;
 	distance = a.distance;
@@ -126,3 +126,17 @@ void IISPHParticle::ParticlePositionCorrection(Boundary boundary)
 	}
 }
 
+bool IISPHParticle::isLegal()
+{
+	//&& density != 0.0&&particleMass != 0.0&&isnormal(acceleration.x) && isnormal(acceleration.y) && isnormal(acceleration.z)
+	if (position.x > -1 && position.y > -1 && position.z > -1 && position.x < 1 && position.y < 1 && position.z < 1 )
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+
+	
+}

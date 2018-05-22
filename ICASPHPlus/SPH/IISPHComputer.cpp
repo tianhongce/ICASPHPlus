@@ -56,7 +56,7 @@ void IISPHComputer::Computation()
 	//自适应分裂
 	ComputePtoSandMopt();
 
-	ProcessMergeandSplit();
+	//ProcessMergeandSplit();
 
 	fluidModel.ComputeNumParticleObj();
 }
@@ -274,9 +274,9 @@ vector<IISPHParticle*> IISPHComputer::ComputeNeighborParticle(IISPHParticle* ori
 	//int gridCellOffserNum = origin->gridCellNum;
 	int gridCellOffserNum = 1;
 	gridCellOffserNum = origin->gridCellNum;
-	cout << "origin->gridCellNum: " << origin->gridCellNum << endl;
+	//cout << "origin->gridCellNum: " << origin->gridCellNum << endl;
 	//cout << "gridCellOffserNum: : " << gridCellOffserNum << endl;
-	if (gridCellOffserNum == 2)
+	if (gridCellOffserNum == 8101)
 	{
 		cout << "aaa" << endl;
 	}
@@ -672,7 +672,10 @@ void IISPHComputer::MapParticleToGrid()
 			cout << "Pressure Acceleration: " << fluidModel.particleList[i]->pressureAcceleration << endl;
 			cout << "Velocity: " << fluidModel.particleList[i]->velocity << endl;
 		}
+
 		hashGridList.PushParticle(fluidModel.particleList[i]);
+	
+		
 	}
 }
 
@@ -1077,7 +1080,7 @@ void IISPHComputer::ComputePressureAccels2()
 			vector<StaticRigidParticle*> boundaryNeighbors = fluidModel.particleList[i]->boundaryNeighbors;
 
 			//////////////////////////////////////////////////////////////////////////
-			// 计算边界粒子
+			// 计算流体粒子
 			//////////////////////////////////////////////////////////////////////////
 			for (unsigned int j = 0; j < fluidNeighbors.size(); j++)
 			{
@@ -1515,215 +1518,952 @@ void IISPHComputer::ProcessMergeandSplit()
 							  //在每次遍历粒子列表的时候都要添加指针不为空的判断；
 		IISPHParticle *pi = fluidModel.particleList[i];
 
-		//if (pi->mopt > 0.05)
-		//{
-		//	cout << i << ": " << pi->mopt << endl;
-		//}
 		double m_rel = pi->particleMass / pi->mopt;
 		//cout << "mrel: " << m_rel <<"--"<< (m_rel == 0.5) << endl;
 		//对S粒子进行处理
-		//if (m_rel <= 0.6 && pi->β<=0)
-		//{
-		//	cout << "S粒子sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss" << endl;
-		//	//S粒子
-		//	int num_S_neighbor = 0;
-		//	for (int j = 0; j < pi->fluidNeighbors.size(); j++)
-		//	{
-		//		if (pi->fluidNeighbors[j] == NULL)
-		//		{
-		//			continue;
-		//		}
+		if (m_rel <= 0.5 && pi->β<=0)
+		{
+			cout << "S粒子sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss" << endl;
+			//S粒子
+			int num_S_neighbor = 0;
+			for (int j = 0; j < pi->fluidNeighbors.size(); j++)
+			{
+				if (pi->fluidNeighbors[j] == NULL)
+				{
+					continue;
+				}
 
-		//		IISPHParticle *pj = pi->fluidNeighbors[j];
-		//		if ((pj->particleMass / pj->mopt >= 0.5&&pj->particleMass / pj->mopt <= 0.9) || (pj->particleMass / pj->mopt < 0.5))
-		//		{
-		//			num_S_neighbor = num_S_neighbor + 1;
-		//		}
+				IISPHParticle *pj = pi->fluidNeighbors[j];
+				if ((pj->particleMass / pj->mopt >= 0.5&&pj->particleMass / pj->mopt <= 0.9) || (pj->particleMass / pj->mopt < 0.5))
+				{
+					num_S_neighbor = num_S_neighbor + 1;
+				}
 
-		//	}
-		//	double mn = pi->particleMass / num_S_neighbor;
+			}
+			double mn = pi->particleMass / num_S_neighbor;
 
-		//	for (int j = 0; j < pi->fluidNeighbors.size(); j++)
-		//	{
-		//		if (pi->fluidNeighbors[j] == NULL)
-		//		{
-		//			continue;
-		//		}
+			for (int j = 0; j < pi->fluidNeighbors.size(); j++)
+			{
+				if (pi->fluidNeighbors[j] == NULL)
+				{
+					continue;
+				}
 
-		//		IISPHParticle *pj = pi->fluidNeighbors[j];
-		//		if ((pj->particleMass / pj->mopt >= 0.5&&pj->particleMass / pj->mopt <= 0.9) || (pj->particleMass / pj->mopt < 0.5))
-		//		{
-		//			pj->position = (pi->position*mn + pj->position*pj->particleMass) / (mn + pj->particleMass);
-		//			pj->velocity = (pi->velocity*mn + pj->velocity*pj->particleMass) / (mn + pj->particleMass);
-		//			pj->particleMass = pj->particleMass + mn;
+				IISPHParticle *pj = pi->fluidNeighbors[j];
+				if ((pj->particleMass / pj->mopt >= 0.5&&pj->particleMass / pj->mopt <= 0.9) || (pj->particleMass / pj->mopt < 0.5))
+				{
+					pj->position = (pi->position*mn + pj->position*pj->particleMass) / (mn + pj->particleMass);
+					pj->velocity = (pi->velocity*mn + pj->velocity*pj->particleMass) / (mn + pj->particleMass);
+					pj->particleMass = pj->particleMass + mn;
 
-		//			pj->β = 0.2;
-		//		}
-		//		int qq = 11;
+					pj->β = 0.2;
+				}
+				int qq = 11;
 
-		//	}
+			}
 
-		//	//删除i粒子，需要先删除所有指向i粒子的指针，1、粒子表的指针；2、其邻居指向的指针。然后删除i粒子，pi指向设为空
-		//	{
-		//		//遍历i粒子的j个邻居，对于邻居j（邻居是相互的）：j粒子的邻居中有i粒子的指针，遍历j粒子的邻居k，删除其指向i的指针，pk指向设为空
-		//		for (int j = 0; j < pi->fluidNeighbors.size(); j++)
-		//		{
-		//			if (pi->fluidNeighbors[j] == NULL)
-		//			{
-		//				continue;
-		//			}
+			//删除i粒子，需要先删除所有指向i粒子的指针，1、粒子表的指针；2、其邻居指向的指针。然后删除i粒子，pi指向设为空
+			{
+				//遍历i粒子的j个邻居，对于邻居j（邻居是相互的）：j粒子的邻居中有i粒子的指针，遍历j粒子的邻居k，删除其指向i的指针，pk指向设为空
+				for (int j = 0; j < pi->fluidNeighbors.size(); j++)
+				{
+					if (pi->fluidNeighbors[j] == NULL)
+					{
+						continue;
+					}
 
-		//			IISPHParticle *pj = pi->fluidNeighbors[j];
-		//			for (int k = 0; k < pj->fluidNeighbors.size(); k++)
-		//			{
-		//				if (pj->fluidNeighbors[k] == NULL)
-		//				{
-		//					continue;
-		//				}
+					IISPHParticle *pj = pi->fluidNeighbors[j];
+					for (int k = 0; k < pj->fluidNeighbors.size(); k++)
+					{
+						if (pj->fluidNeighbors[k] == NULL)
+						{
+							continue;
+						}
 
-		//				IISPHParticle *pk = pj->fluidNeighbors[k];
-		//				if (pk == pi)
-		//				{
-		//					pj->fluidNeighbors[k] = NULL;
-		//				}
-		//			}
+						IISPHParticle *pk = pj->fluidNeighbors[k];
+						if (pk == pi)
+						{
+							pj->fluidNeighbors[k] = NULL;
+						}
+					}
 
-		//		}
-		//		delete fluidModel.particleList[i];
-		//		fluidModel.particleList[i] = NULL;
-		//		//int qqq = 43;
+				}
+				delete fluidModel.particleList[i];
+				fluidModel.particleList[i] = NULL;
+				//int qqq = 43;
 
-		//	}
-		//	pi->β = 0.2;
-		//	//cout << "pi->β ："<< i <<" " << pi->β << endl;
-		//}
+			}
+			//pi->β = 0.2;
+			//cout << "pi->β ："<< i <<" " << pi->β << endl;
+		}
 
 		//-------------------------------------------------------------------------------
 		//l 粒子
-		//if (m_rel >= 1.1 && m_rel < 2 && pi->β <= 0)
-		//{
-		//	cout << "l粒子lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll" << endl;
-		//	//S粒子
-		//	double mex = pi->particleMass - pi->mopt;
+		if (m_rel >= 1.1 && m_rel < 2 && pi->β <= 0)
+		{
+			cout << "l粒子lllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllll" << endl;
+			//S粒子
+			double mex = pi->particleMass - pi->mopt;
 
-		//	int num_S_neighbor = 0;
-		//	for (int j = 0; j < pi->fluidNeighbors.size(); j++)
-		//	{
-		//		if (pi->fluidNeighbors[j] == NULL)
-		//		{
-		//			continue;
-		//		}
+			int num_S_neighbor = 0;
+			for (int j = 0; j < pi->fluidNeighbors.size(); j++)
+			{
+				if (pi->fluidNeighbors[j] == NULL)
+				{
+					continue;
+				}
 
-		//		IISPHParticle *pj = pi->fluidNeighbors[j];
-		//		if ((pj->particleMass / pj->mopt >= 0.5&&pj->particleMass / pj->mopt <= 0.9) || (pj->particleMass / pj->mopt < 0.5))
-		//		{
-		//			num_S_neighbor = num_S_neighbor + 1;
-		//		}
+				IISPHParticle *pj = pi->fluidNeighbors[j];
+				if ((pj->particleMass / pj->mopt >= 0.5&&pj->particleMass / pj->mopt <= 0.9) || (pj->particleMass / pj->mopt < 0.5))
+				{
+					num_S_neighbor = num_S_neighbor + 1;
+				}
 
-		//	}
-		//	double mn = mex / num_S_neighbor;
+			}
+			double mn = mex / num_S_neighbor;
 
-		//	for (int j = 0; j < pi->fluidNeighbors.size(); j++)
-		//	{
-		//		if (pi->fluidNeighbors[j] == NULL)
-		//		{
-		//			continue;
-		//		}
+			for (int j = 0; j < pi->fluidNeighbors.size(); j++)
+			{
+				if (pi->fluidNeighbors[j] == NULL)
+				{
+					continue;
+				}
 
-		//		IISPHParticle *pj = pi->fluidNeighbors[j];
-		//		if ((pj->particleMass / pj->mopt >= 0.5&&pj->particleMass / pj->mopt <= 0.9) || (pj->particleMass / pj->mopt < 0.5))
-		//		{
-		//			pj->position = (pi->position*mn + pj->position*pj->particleMass) / (mn + pj->particleMass);
-		//			pj->velocity = (pi->velocity*mn + pj->velocity*pj->particleMass) / (mn + pj->particleMass);
-		//			pj->particleMass = pj->particleMass + mn;
+				IISPHParticle *pj = pi->fluidNeighbors[j];
+				if ((pj->particleMass / pj->mopt >= 0.5&&pj->particleMass / pj->mopt <= 0.9) || (pj->particleMass / pj->mopt < 0.5))
+				{
+					pj->position = (pi->position*mn + pj->position*pj->particleMass) / (mn + pj->particleMass);
+					pj->velocity = (pi->velocity*mn + pj->velocity*pj->particleMass) / (mn + pj->particleMass);
+					pj->particleMass = pj->particleMass + mn;
 
-		//			pj->β = 0.2;
-		//		}
-		//		//int qq = 11;
+					pj->β = 0.2;
+				}
+				//int qq = 11;
 
-		//	}
+			}
 
-		//	//pi->β = 0.2;
-		//	//cout << "pi->β ："<< i <<" " << pi->β << endl;
-		//}
+			//pi->β = 0.2;
+			//cout << "pi->β ："<< i <<" " << pi->β << endl;
+		}
 
 		//-------------------------------------------------------------------------------
 		//对L粒子
 		//此方法中，生成的新粒子的position有待优化……
 
-		if (m_rel > 2 && pi->β <= 0)
-		{
-			cout << "L粒子LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL" << endl;
-			int num_np = (pi->particleMass + pi->mopt - 1) / pi->mopt;//分裂成的新粒子的个数。结果向上取整
+		//if (isnormal(m_rel) && m_rel > 2 && pi->β <= 0)
+		//{
+		//	if (pi->density == 0)
+		//	{
+		//		cout << "pi->density == 0" << endl;
+		//	}
 
-			if (num_np = 2)
-			{
-				double r_Spliting = 0.3*pi->particleSupportRad;//新生成的粒子所在球面的半径，0.3为取得自定义的值，此处用来测试
-				double mass_np = pi->particleMass / num_np;
+		//	cout << "pi->denstiy" << pi->density << endl;
+		//	cout << "L粒子LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL" << endl;
+		//	int num_np = ceil(pi->particleMass/pi->mopt);//分裂成的新粒子的个数。结果向上取整
 
-				IISPHParticle *np1 = new IISPHParticle();
-				IISPHParticle *np2 = new IISPHParticle();
-				Vector3f p1, p2;
-				p1.SetValue(pi->position.x, pi->position.y, pi->position.z+ r_Spliting);
+		//	if (num_np == 2)
+		//	{
+		//		cout << "2222222222222222222222222222222222222222222222222" << endl;
 
-				int hashValueP1 = FunctionKit::PositionMapHash(p1,
-					SharedData::GetCellLength(),
-					SharedData::GetHashCellNum(),
-					boundary.offset); //得到当前position所对应的哈希值
-				
-				np1->InitializationPVS(p1, hashValueP1, mass_np, pi->density);//需要添加构造函数（至少）：mass，position，velocity, density
+		//		double r_Spliting = 0.3*pi->particleSupportRad;//新生成的粒子所在球面的半径，0.3为取得自定义的值，此处用来测试
+		//		double mass_np = pi->particleMass / num_np;
+		//		
 
-				int hashValueP2 = FunctionKit::PositionMapHash(p2,
-					SharedData::GetCellLength(),
-					SharedData::GetHashCellNum(),
-					boundary.offset); //得到当前position所对应的哈希值
-				p2.SetValue(pi->position.x, pi->position.y, pi->position.z - r_Spliting);
-				np2->InitializationPVS(p2, hashValueP2, mass_np, pi->density);
+		//		IISPHParticle *np1 = new IISPHParticle(*pi);
+		//		IISPHParticle *np2 = new IISPHParticle(*pi);
 
-				np1->β = 0.5;
-				np2->β = 0.5;
-				fluidModel.particleList.push_back(np1);
-				fluidModel.particleList.push_back(np2);
+		//		np1->lastPressure = pi->pressure;
+		//		np2->lastPressure = pi->pressure;
 
-				//删除粒子部分代码开始标志--------------------------------------------------------------------------------------------
-				//删除i粒子，需要先删除所有指向i粒子的指针，1、粒子表的指针；2、其邻居指向的指针。然后删除i粒子，pi指向设为空
-				{
-					//遍历i粒子的j个邻居，对于邻居j（邻居是相互的）：j粒子的邻居中有i粒子的指针，遍历j粒子的邻居k，删除其指向i的指针，pk指向设为空
-					for (int j = 0; j < pi->fluidNeighbors.size(); j++)
-					{
-						if (pi->fluidNeighbors[j] == NULL)
-						{
-							continue;
-						}
+		//		Vector3f p1, p2;
+		//		p1.SetValue(pi->position.x, pi->position.y, pi->position.z+ r_Spliting);
 
-						IISPHParticle *pj = pi->fluidNeighbors[j];
-						for (int k = 0; k < pj->fluidNeighbors.size(); k++)
-						{
-							if (pj->fluidNeighbors[k] == NULL)
-							{
-								continue;
-							}
+		//		int hashValueP1 = FunctionKit::PositionMapHash(p1,
+		//			SharedData::GetCellLength(),
+		//			SharedData::GetHashCellNum(),
+		//			boundary.offset); //得到当前position所对应的哈希值
+		//		cout << "pi->denstiy" << pi->density << endl;
+		//		cout << "massssssssssssssssssssssssss_npppppppppppppppppppppppp" << mass_np << endl;
+		//		cout << "massssssssssssssssssssssssss_npppppppppppppppppppppppphashValueP1" << hashValueP1 << endl;
+		//		cout << "massssssssssssssssssssssssss_nppppppppppppppppppppppppdensity" << pi->density << endl;
+		//		cout << "massssssssssssssssssssssssss_nppppppppppppppppppppppppp1" << p1 << endl;
 
-							IISPHParticle *pk = pj->fluidNeighbors[k];
-							if (pk == pi)
-							{
-								pj->fluidNeighbors[k] = NULL;
-							}
-						}
-
-					}
-					delete fluidModel.particleList[i];
-					fluidModel.particleList[i] = NULL;
-					//int qqq = 43;
-
-				}
-
-				//删除粒子部分代码结束标志----------------------------------------------------------------------------------------------------
-			}
+		//		np1->InitializationPVS(p1, hashValueP1, mass_np, pi->density);//需要添加构造函数（至少）：mass，position，velocity, density
+		//		
+		//		//vector<IISPHParticle*> tempnp1nei = ComputeNeighborParticle(np1);
+		//		////fluidModel.particleList[i]->fluidNeighbors =temp;
+		//		//for (int j = 0; j < tempnp1nei.size(); j++)
+		//		//{
+		//		//	if (tempnp1nei[j] == NULL)
+		//		//	{
+		//		//		continue;
+		//		//	}
+		//		//	//将临近的所有粒子装入对应的粒子邻居表当中
+		//		//	np1->fluidNeighbors.push_back(tempnp1nei[j]);
+		//		//}
 
 
+		//		int hashValueP2 = FunctionKit::PositionMapHash(p2,
+		//			SharedData::GetCellLength(),
+		//			SharedData::GetHashCellNum(),
+		//			boundary.offset); //得到当前position所对应的哈希值
+		//		p2.SetValue(pi->position.x, pi->position.y, pi->position.z - r_Spliting);
+		//		np2->InitializationPVS(p2, hashValueP2, mass_np, pi->density);
 
-		}
+		//		np1->β = 0.5;
+		//		np2->β = 0.5;
+		//		fluidModel.particleList.push_back(np1);
+		//		fluidModel.particleList.push_back(np2);
+
+		//		//删除粒子部分代码开始标志--------------------------------------------------------------------------------------------
+		//		//删除i粒子，需要先删除所有指向i粒子的指针，1、粒子表的指针；2、其邻居指向的指针。然后删除i粒子，pi指向设为空
+		//		{
+		//			//遍历i粒子的j个邻居，对于邻居j（邻居是相互的）：j粒子的邻居中有i粒子的指针，遍历j粒子的邻居k，删除其指向i的指针，新增其指向生成粒子的指针
+		//			//aa
+		//			for (int j = 0; j < pi->fluidNeighbors.size(); j++)
+		//			{
+		//				if (pi->fluidNeighbors[j] == NULL)
+		//				{
+		//					continue;
+		//				}
+
+		//				IISPHParticle *pj = pi->fluidNeighbors[j];
+		//				for (int k = 0; k < pj->fluidNeighbors.size(); k++)
+		//				{
+		//					if (pj->fluidNeighbors[k] == NULL)
+		//					{
+		//						continue;
+		//					}
+
+		//					IISPHParticle *pk = pj->fluidNeighbors[k];
+		//					if (pk == pi)
+		//					{
+		//						pj->fluidNeighbors[k] = NULL;
+		//						pj->fluidNeighbors.push_back(np1);
+		//						pj->fluidNeighbors.push_back(np2);
+		//						
+		//					}
+		//				}
+
+		//			}
+		//			delete fluidModel.particleList[i];
+		//			fluidModel.particleList[i] = NULL;
+		//			//int qqq = 43;
+
+		//		}
+
+		//		//删除粒子部分代码结束标志----------------------------------------------------------------------------------------------------
+		//	}
+
+		//	if (num_np == 3)
+		//	{
+		//		cout << "333333333333333333333333333333333333333333333333333" << endl;
+
+		//		double r_Spliting = 0.3*pi->particleSupportRad;//新生成的粒子所在球面的半径，0.3为取得自定义的值，此处用来测试
+		//		double mass_np = pi->particleMass / num_np;
+		//		double c = sqrt(3.0)*r_Spliting*0.5;
+
+		//		IISPHParticle *np1 = new IISPHParticle(*pi);
+		//		IISPHParticle *np2 = new IISPHParticle(*pi);
+		//		IISPHParticle *np3 = new IISPHParticle(*pi);
+
+		//		np1->lastPressure = pi->pressure;
+		//		np2->lastPressure = pi->pressure;
+		//		np3->lastPressure = pi->pressure;
+
+		//		Vector3f p1, p2, p3;
+		//		p1.SetValue(pi->position.x, r_Spliting+pi->position.y, pi->position.z);
+		//		p2.SetValue(-c+pi->position.x, -0.5*r_Spliting+pi->position.y, pi->position.z);
+		//		p3.SetValue(c+pi->position.x, -0.5*r_Spliting + pi->position.y, pi->position.z);
+
+		//		int hashValueP1 = FunctionKit::PositionMapHash(p1,SharedData::GetCellLength(),SharedData::GetHashCellNum(),boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP2 = FunctionKit::PositionMapHash(p2,SharedData::GetCellLength(),SharedData::GetHashCellNum(),boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP3 = FunctionKit::PositionMapHash(p3, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		
+		//		np1->InitializationPVS(p1, hashValueP1, mass_np, pi->density);//需要添加构造函数（至少）：mass，position，velocity, density
+		//		np2->InitializationPVS(p2, hashValueP2, mass_np, pi->density);
+		//		np3->InitializationPVS(p3, hashValueP3, mass_np, pi->density);
+		//		
+		//		np1->β = 0.5;
+		//		np2->β = 0.5;
+		//		np3->β = 0.5;
+
+		//		fluidModel.particleList.push_back(np1);
+		//		fluidModel.particleList.push_back(np2);
+		//		fluidModel.particleList.push_back(np3);
+
+		//		//删除粒子部分代码开始标志--------------------------------------------------------------------------------------------
+		//		//删除i粒子，需要先删除所有指向i粒子的指针，1、粒子表的指针；2、其邻居指向的指针。然后删除i粒子，pi指向设为空
+		//		{
+		//			//遍历i粒子的j个邻居，对于邻居j（邻居是相互的）：j粒子的邻居中有i粒子的指针，遍历j粒子的邻居k，删除其指向i的指针，新增其指向生成粒子的指针
+		//			//aa
+		//			for (int j = 0; j < pi->fluidNeighbors.size(); j++)
+		//			{
+		//				if (pi->fluidNeighbors[j] == NULL)
+		//				{
+		//					continue;
+		//				}
+
+		//				IISPHParticle *pj = pi->fluidNeighbors[j];
+		//				for (int k = 0; k < pj->fluidNeighbors.size(); k++)
+		//				{
+		//					if (pj->fluidNeighbors[k] == NULL)
+		//					{
+		//						continue;
+		//					}
+
+		//					IISPHParticle *pk = pj->fluidNeighbors[k];
+		//					if (pk == pi)
+		//					{
+		//						pj->fluidNeighbors[k] = NULL;
+		//						pj->fluidNeighbors.push_back(np1);
+		//						pj->fluidNeighbors.push_back(np2);
+		//						pj->fluidNeighbors.push_back(np3);
+
+
+		//					}
+		//				}
+
+		//			}
+		//			delete fluidModel.particleList[i];
+		//			fluidModel.particleList[i] = NULL;
+		//			//int qqq = 43;
+
+		//		}
+
+		//		//删除粒子部分代码结束标志----------------------------------------------------------------------------------------------------
+		//	}
+
+		//	if (num_np == 4)
+		//	{
+		//		cout << "4444444444444444444444444444444444444444444444444" << endl;
+
+		//		double r_Spliting = 0.3*pi->particleSupportRad;//新生成的粒子所在球面的半径，0.3为取得自定义的值，此处用来测试
+		//		double mass_np = pi->particleMass / num_np;
+		//		double c = 1.0 / sqrt(3.0)*r_Spliting;
+
+		//		IISPHParticle *np1 = new IISPHParticle(*pi);
+		//		IISPHParticle *np2 = new IISPHParticle(*pi);
+		//		IISPHParticle *np3 = new IISPHParticle(*pi);
+		//		IISPHParticle *np4 = new IISPHParticle(*pi);
+
+		//		np1->lastPressure = pi->pressure;
+		//		np2->lastPressure = pi->pressure;
+		//		np3->lastPressure = pi->pressure;
+		//		np4->lastPressure = pi->pressure;
+
+		//		Vector3f p1, p2, p3, p4;
+		//		p1.SetValue(c + pi->position.x, c + pi->position.y, c + pi->position.z);
+		//		p2.SetValue(-c + pi->position.x, c + pi->position.y, -c + pi->position.z);
+		//		p3.SetValue(-c + pi->position.x, -c + pi->position.y, c + pi->position.z);
+		//		p4.SetValue(c + pi->position.x, -c + pi->position.y, -c + pi->position.z);
+
+		//		int hashValueP1 = FunctionKit::PositionMapHash(p1, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP2 = FunctionKit::PositionMapHash(p2, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP3 = FunctionKit::PositionMapHash(p3, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP4 = FunctionKit::PositionMapHash(p4, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		
+		//		np1->InitializationPVS(p1, hashValueP1, mass_np, pi->density);//需要添加构造函数（至少）：mass，position，velocity, density
+		//		np2->InitializationPVS(p2, hashValueP2, mass_np, pi->density);
+		//		np3->InitializationPVS(p3, hashValueP3, mass_np, pi->density);
+		//		np4->InitializationPVS(p4, hashValueP4, mass_np, pi->density);
+
+		//		np1->β = 0.5;
+		//		np2->β = 0.5;
+		//		np3->β = 0.5;
+		//		np4->β = 0.5;
+
+		//		fluidModel.particleList.push_back(np1);
+		//		fluidModel.particleList.push_back(np2);
+		//		fluidModel.particleList.push_back(np3);
+		//		fluidModel.particleList.push_back(np4);
+
+
+		//		//删除粒子部分代码开始标志--------------------------------------------------------------------------------------------
+		//		//删除i粒子，需要先删除所有指向i粒子的指针，1、粒子表的指针；2、其邻居指向的指针。然后删除i粒子，pi指向设为空
+		//		{
+		//			//遍历i粒子的j个邻居，对于邻居j（邻居是相互的）：j粒子的邻居中有i粒子的指针，遍历j粒子的邻居k，删除其指向i的指针，新增其指向生成粒子的指针
+		//			//aa
+		//			for (int j = 0; j < pi->fluidNeighbors.size(); j++)
+		//			{
+		//				if (pi->fluidNeighbors[j] == NULL)
+		//				{
+		//					continue;
+		//				}
+
+		//				IISPHParticle *pj = pi->fluidNeighbors[j];
+		//				for (int k = 0; k < pj->fluidNeighbors.size(); k++)
+		//				{
+		//					if (pj->fluidNeighbors[k] == NULL)
+		//					{
+		//						continue;
+		//					}
+
+		//					IISPHParticle *pk = pj->fluidNeighbors[k];
+		//					if (pk == pi)
+		//					{
+		//						pj->fluidNeighbors[k] = NULL;
+		//						pj->fluidNeighbors.push_back(np1);
+		//						pj->fluidNeighbors.push_back(np2);
+		//						pj->fluidNeighbors.push_back(np3);
+		//						pj->fluidNeighbors.push_back(np4);
+
+		//					}
+		//				}
+
+		//			}
+		//			delete fluidModel.particleList[i];
+		//			fluidModel.particleList[i] = NULL;
+		//		}
+
+		//		//删除粒子部分代码结束标志----------------------------------------------------------------------------------------------------
+		//	}
+
+		//	if (num_np == 5)
+		//	{
+		//		cout << "5555555555555555555555555555555555555555555555" << endl;
+
+		//		double r_Spliting = 0.3*pi->particleSupportRad;//新生成的粒子所在球面的半径，0.3为取得自定义的值，此处用来测试
+		//		double mass_np = pi->particleMass / num_np;
+		//		double c = 1.0 / sqrt(3.0)*r_Spliting;
+
+		//		IISPHParticle *np1 = new IISPHParticle(*pi);
+		//		IISPHParticle *np2 = new IISPHParticle(*pi);
+		//		IISPHParticle *np3 = new IISPHParticle(*pi);
+		//		IISPHParticle *np4 = new IISPHParticle(*pi);
+		//		IISPHParticle *np5 = new IISPHParticle(*pi);
+
+		//		np1->lastPressure = pi->pressure;
+		//		np2->lastPressure = pi->pressure;
+		//		np3->lastPressure = pi->pressure;
+		//		np4->lastPressure = pi->pressure;
+		//		np5->lastPressure = pi->pressure;
+
+		//		Vector3f p1, p2, p3, p4, p5;
+		//		p1.SetValue(c + pi->position.x, c + pi->position.y, c + pi->position.z);
+		//		p2.SetValue(-c + pi->position.x, c + pi->position.y, -c + pi->position.z);
+		//		p3.SetValue(-c + pi->position.x, -c + pi->position.y, c + pi->position.z);
+		//		p4.SetValue(c + pi->position.x, -c + pi->position.y, -c + pi->position.z);
+		//		p5.SetValue(pi->position.x, pi->position.y, pi->position.z);
+
+		//		int hashValueP1 = FunctionKit::PositionMapHash(p1, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP2 = FunctionKit::PositionMapHash(p2, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP3 = FunctionKit::PositionMapHash(p3, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP4 = FunctionKit::PositionMapHash(p4, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP5 = FunctionKit::PositionMapHash(p5, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+
+		//		np1->InitializationPVS(p1, hashValueP1, mass_np, pi->density);//需要添加构造函数（至少）：mass，position，velocity, density
+		//		np2->InitializationPVS(p2, hashValueP2, mass_np, pi->density);
+		//		np3->InitializationPVS(p3, hashValueP3, mass_np, pi->density);
+		//		np4->InitializationPVS(p4, hashValueP4, mass_np, pi->density);
+		//		np5->InitializationPVS(p5, hashValueP5, mass_np, pi->density);
+
+		//		np1->β = 0.5;
+		//		np2->β = 0.5;
+		//		np3->β = 0.5;
+		//		np4->β = 0.5;
+		//		np5->β = 0.5;
+
+		//		fluidModel.particleList.push_back(np1);
+		//		fluidModel.particleList.push_back(np2);
+		//		fluidModel.particleList.push_back(np3);
+		//		fluidModel.particleList.push_back(np4);
+		//		fluidModel.particleList.push_back(np5);
+
+
+		//		//删除粒子部分代码开始标志--------------------------------------------------------------------------------------------
+		//		//删除i粒子，需要先删除所有指向i粒子的指针，1、粒子表的指针；2、其邻居指向的指针。然后删除i粒子，pi指向设为空
+		//		{
+		//			//遍历i粒子的j个邻居，对于邻居j（邻居是相互的）：j粒子的邻居中有i粒子的指针，遍历j粒子的邻居k，删除其指向i的指针，新增其指向生成粒子的指针
+		//			//aa
+		//			for (int j = 0; j < pi->fluidNeighbors.size(); j++)
+		//			{
+		//				if (pi->fluidNeighbors[j] == NULL)
+		//				{
+		//					continue;
+		//				}
+
+		//				IISPHParticle *pj = pi->fluidNeighbors[j];
+		//				for (int k = 0; k < pj->fluidNeighbors.size(); k++)
+		//				{
+		//					if (pj->fluidNeighbors[k] == NULL)
+		//					{
+		//						continue;
+		//					}
+
+		//					IISPHParticle *pk = pj->fluidNeighbors[k];
+		//					if (pk == pi)
+		//					{
+		//						pj->fluidNeighbors[k] = NULL;
+		//						pj->fluidNeighbors.push_back(np1);
+		//						pj->fluidNeighbors.push_back(np2);
+		//						pj->fluidNeighbors.push_back(np3);
+		//						pj->fluidNeighbors.push_back(np4);
+		//						pj->fluidNeighbors.push_back(np5);
+
+		//					}
+		//				}
+
+		//			}
+		//			delete fluidModel.particleList[i];
+		//			fluidModel.particleList[i] = NULL;
+		//		}
+
+		//		//删除粒子部分代码结束标志----------------------------------------------------------------------------------------------------
+		//	}
+
+		//	if (num_np == 6)
+		//	{
+		//		cout << "66666666666666666666666666666666666666666666666" << endl;
+
+		//		double r_Spliting = 0.3*pi->particleSupportRad;//新生成的粒子所在球面的半径，0.3为取得自定义的值，此处用来测试
+		//		double mass_np = pi->particleMass / num_np;
+		//		double c = r_Spliting;
+
+		//		IISPHParticle *np1 = new IISPHParticle(*pi);
+		//		IISPHParticle *np2 = new IISPHParticle(*pi);
+		//		IISPHParticle *np3 = new IISPHParticle(*pi);
+		//		IISPHParticle *np4 = new IISPHParticle(*pi);
+		//		IISPHParticle *np5 = new IISPHParticle(*pi);
+		//		IISPHParticle *np6 = new IISPHParticle(*pi);
+
+		//		np1->lastPressure = pi->pressure;
+		//		np2->lastPressure = pi->pressure;
+		//		np3->lastPressure = pi->pressure;
+		//		np4->lastPressure = pi->pressure;
+		//		np5->lastPressure = pi->pressure;
+		//		np6->lastPressure = pi->pressure;
+
+		//		Vector3f p1, p2, p3, p4, p5, p6;
+		//		p1.SetValue(0 + pi->position.x, 0 + pi->position.y, c + pi->position.z);
+		//		p2.SetValue(0 + pi->position.x, 0 + pi->position.y, -c + pi->position.z);
+		//		p3.SetValue(c + pi->position.x, 0 + pi->position.y, 0 + pi->position.z);
+		//		p4.SetValue(-c + pi->position.x,0 + pi->position.y, 0 + pi->position.z);
+		//		p5.SetValue(0 + pi->position.x, -c + pi->position.y, 0 + pi->position.z);
+		//		p6.SetValue(0 + pi->position.x, c + pi->position.y, 0 + pi->position.z);
+
+		//		int hashValueP1 = FunctionKit::PositionMapHash(p1, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP2 = FunctionKit::PositionMapHash(p2, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP3 = FunctionKit::PositionMapHash(p3, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP4 = FunctionKit::PositionMapHash(p4, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP5 = FunctionKit::PositionMapHash(p5, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP6 = FunctionKit::PositionMapHash(p6, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+
+		//		np1->InitializationPVS(p1, hashValueP1, mass_np, pi->density);//需要添加构造函数（至少）：mass，position，velocity, density
+		//		np2->InitializationPVS(p2, hashValueP2, mass_np, pi->density);
+		//		np3->InitializationPVS(p3, hashValueP3, mass_np, pi->density);
+		//		np4->InitializationPVS(p4, hashValueP4, mass_np, pi->density);
+		//		np5->InitializationPVS(p5, hashValueP5, mass_np, pi->density);
+		//		np6->InitializationPVS(p6, hashValueP6, mass_np, pi->density);
+
+		//		np1->β = 0.5;
+		//		np2->β = 0.5;
+		//		np3->β = 0.5;
+		//		np4->β = 0.5;
+		//		np5->β = 0.5;
+		//		np6->β = 0.5;
+
+		//		fluidModel.particleList.push_back(np1);
+		//		fluidModel.particleList.push_back(np2);
+		//		fluidModel.particleList.push_back(np3);
+		//		fluidModel.particleList.push_back(np4);
+		//		fluidModel.particleList.push_back(np5);
+		//		fluidModel.particleList.push_back(np6);
+
+
+		//		//删除粒子部分代码开始标志--------------------------------------------------------------------------------------------
+		//		//删除i粒子，需要先删除所有指向i粒子的指针，1、粒子表的指针；2、其邻居指向的指针。然后删除i粒子，pi指向设为空
+		//		{
+		//			//遍历i粒子的j个邻居，对于邻居j（邻居是相互的）：j粒子的邻居中有i粒子的指针，遍历j粒子的邻居k，删除其指向i的指针，新增其指向生成粒子的指针
+		//			//aa
+		//			for (int j = 0; j < pi->fluidNeighbors.size(); j++)
+		//			{
+		//				if (pi->fluidNeighbors[j] == NULL)
+		//				{
+		//					continue;
+		//				}
+
+		//				IISPHParticle *pj = pi->fluidNeighbors[j];
+		//				for (int k = 0; k < pj->fluidNeighbors.size(); k++)
+		//				{
+		//					if (pj->fluidNeighbors[k] == NULL)
+		//					{
+		//						continue;
+		//					}
+
+		//					IISPHParticle *pk = pj->fluidNeighbors[k];
+		//					if (pk == pi)
+		//					{
+		//						pj->fluidNeighbors[k] = NULL;
+		//						pj->fluidNeighbors.push_back(np1);
+		//						pj->fluidNeighbors.push_back(np2);
+		//						pj->fluidNeighbors.push_back(np3);
+		//						pj->fluidNeighbors.push_back(np4);
+		//						pj->fluidNeighbors.push_back(np5);
+		//						pj->fluidNeighbors.push_back(np6);
+
+		//					}
+		//				}
+
+		//			}
+		//			delete fluidModel.particleList[i];
+		//			fluidModel.particleList[i] = NULL;
+		//		}
+
+		//		//删除粒子部分代码结束标志----------------------------------------------------------------------------------------------------
+		//	}
+
+		//	if (num_np == 7)
+		//	{
+		//		cout << "77777777777777777777777777777777777777777777777" << endl;
+
+		//		double r_Spliting = 0.3*pi->particleSupportRad;//新生成的粒子所在球面的半径，0.3为取得自定义的值，此处用来测试
+		//		double mass_np = pi->particleMass / num_np;
+		//		double c = r_Spliting;
+
+		//		IISPHParticle *np1 = new IISPHParticle(*pi);
+		//		IISPHParticle *np2 = new IISPHParticle(*pi);
+		//		IISPHParticle *np3 = new IISPHParticle(*pi);
+		//		IISPHParticle *np4 = new IISPHParticle(*pi);
+		//		IISPHParticle *np5 = new IISPHParticle(*pi);
+		//		IISPHParticle *np6 = new IISPHParticle(*pi);
+		//		IISPHParticle *np7 = new IISPHParticle(*pi);
+
+		//		np1->lastPressure = pi->pressure;
+		//		np2->lastPressure = pi->pressure;
+		//		np3->lastPressure = pi->pressure;
+		//		np4->lastPressure = pi->pressure;
+		//		np5->lastPressure = pi->pressure;
+		//		np6->lastPressure = pi->pressure;
+		//		np7->lastPressure = pi->pressure;
+
+		//		Vector3f p1, p2, p3, p4, p5, p6, p7;
+		//		p1.SetValue(0 + pi->position.x, 0 + pi->position.y, c + pi->position.z);
+		//		p2.SetValue(0 + pi->position.x, 0 + pi->position.y, -c + pi->position.z);
+		//		p3.SetValue(c + pi->position.x, 0 + pi->position.y, 0 + pi->position.z);
+		//		p4.SetValue(-c + pi->position.x, 0 + pi->position.y, 0 + pi->position.z);
+		//		p5.SetValue(0 + pi->position.x, -c + pi->position.y, 0 + pi->position.z);
+		//		p6.SetValue(0 + pi->position.x, c + pi->position.y, 0 + pi->position.z);
+		//		p7.SetValue(0 + pi->position.x, 0 + pi->position.y, 0 + pi->position.z);
+
+		//		int hashValueP1 = FunctionKit::PositionMapHash(p1, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP2 = FunctionKit::PositionMapHash(p2, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP3 = FunctionKit::PositionMapHash(p3, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP4 = FunctionKit::PositionMapHash(p4, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP5 = FunctionKit::PositionMapHash(p5, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP6 = FunctionKit::PositionMapHash(p6, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP7 = FunctionKit::PositionMapHash(p7, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+
+		//		np1->InitializationPVS(p1, hashValueP1, mass_np, pi->density);//需要添加构造函数（至少）：mass，position，velocity, density
+		//		np2->InitializationPVS(p2, hashValueP2, mass_np, pi->density);
+		//		np3->InitializationPVS(p3, hashValueP3, mass_np, pi->density);
+		//		np4->InitializationPVS(p4, hashValueP4, mass_np, pi->density);
+		//		np5->InitializationPVS(p5, hashValueP5, mass_np, pi->density);
+		//		np6->InitializationPVS(p6, hashValueP6, mass_np, pi->density);
+		//		np7->InitializationPVS(p7, hashValueP7, mass_np, pi->density);
+
+		//		np1->β = 0.5;
+		//		np2->β = 0.5;
+		//		np3->β = 0.5;
+		//		np4->β = 0.5;
+		//		np5->β = 0.5;
+		//		np6->β = 0.5;
+		//		np7->β = 0.5;
+
+		//		fluidModel.particleList.push_back(np1);
+		//		fluidModel.particleList.push_back(np2);
+		//		fluidModel.particleList.push_back(np3);
+		//		fluidModel.particleList.push_back(np4);
+		//		fluidModel.particleList.push_back(np5);
+		//		fluidModel.particleList.push_back(np6);
+		//		fluidModel.particleList.push_back(np7);
+
+
+		//		//删除粒子部分代码开始标志--------------------------------------------------------------------------------------------
+		//		//删除i粒子，需要先删除所有指向i粒子的指针，1、粒子表的指针；2、其邻居指向的指针。然后删除i粒子，pi指向设为空
+		//		{
+		//			//遍历i粒子的j个邻居，对于邻居j（邻居是相互的）：j粒子的邻居中有i粒子的指针，遍历j粒子的邻居k，删除其指向i的指针，新增其指向生成粒子的指针
+		//			//aa
+		//			for (int j = 0; j < pi->fluidNeighbors.size(); j++)
+		//			{
+		//				if (pi->fluidNeighbors[j] == NULL)
+		//				{
+		//					continue;
+		//				}
+
+		//				IISPHParticle *pj = pi->fluidNeighbors[j];
+		//				for (int k = 0; k < pj->fluidNeighbors.size(); k++)
+		//				{
+		//					if (pj->fluidNeighbors[k] == NULL)
+		//					{
+		//						continue;
+		//					}
+
+		//					IISPHParticle *pk = pj->fluidNeighbors[k];
+		//					if (pk == pi)
+		//					{
+		//						pj->fluidNeighbors[k] = NULL;
+		//						pj->fluidNeighbors.push_back(np1);
+		//						pj->fluidNeighbors.push_back(np2);
+		//						pj->fluidNeighbors.push_back(np3);
+		//						pj->fluidNeighbors.push_back(np4);
+		//						pj->fluidNeighbors.push_back(np5);
+		//						pj->fluidNeighbors.push_back(np6);
+		//						pj->fluidNeighbors.push_back(np7);
+
+		//					}
+		//				}
+
+		//			}
+		//			delete fluidModel.particleList[i];
+		//			fluidModel.particleList[i] = NULL;
+		//		}
+
+		//		//删除粒子部分代码结束标志----------------------------------------------------------------------------------------------------
+		//	}
+		//	if (num_np == 8)
+		//	{
+		//		cout << "888888888888888888888888888888888888888888888888888888888" << endl;
+
+		//		double r_Spliting = 0.3*pi->particleSupportRad;//新生成的粒子所在球面的半径，0.3为取得自定义的值，此处用来测试
+		//		double mass_np = pi->particleMass / num_np;
+		//		double c = 1.0 / sqrt(3.0)*r_Spliting;
+
+		//		IISPHParticle *np1 = new IISPHParticle(*pi);
+		//		IISPHParticle *np2 = new IISPHParticle(*pi);
+		//		IISPHParticle *np3 = new IISPHParticle(*pi);
+		//		IISPHParticle *np4 = new IISPHParticle(*pi);
+		//		IISPHParticle *np5 = new IISPHParticle(*pi);
+		//		IISPHParticle *np6 = new IISPHParticle(*pi);
+		//		IISPHParticle *np7 = new IISPHParticle(*pi);
+		//		IISPHParticle *np8 = new IISPHParticle(*pi);
+
+		//		np1->lastPressure = pi->pressure;
+		//		np2->lastPressure = pi->pressure;
+		//		np3->lastPressure = pi->pressure;
+		//		np4->lastPressure = pi->pressure;
+		//		np5->lastPressure = pi->pressure;
+		//		np6->lastPressure = pi->pressure;
+		//		np7->lastPressure = pi->pressure;
+		//		np8->lastPressure = pi->pressure;
+
+		//		Vector3f p1, p2, p3, p4, p5, p6, p7, p8;
+		//		p1.SetValue(c + pi->position.x, c + pi->position.y, c + pi->position.z);
+		//		p2.SetValue(-c + pi->position.x, c + pi->position.y, c + pi->position.z);
+		//		p3.SetValue(c + pi->position.x, -c + pi->position.y, c + pi->position.z);
+		//		p4.SetValue(c + pi->position.x, c + pi->position.y, -c + pi->position.z);
+		//		p5.SetValue(-c + pi->position.x, -c + pi->position.y, c + pi->position.z);
+		//		p6.SetValue(-c + pi->position.x, c + pi->position.y, -c + pi->position.z);
+		//		p7.SetValue(c + pi->position.x, -c + pi->position.y, -c + pi->position.z);
+		//		p8.SetValue(-c + pi->position.x, -c + pi->position.y, -c + pi->position.z);
+
+		//		int hashValueP1 = FunctionKit::PositionMapHash(p1, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP2 = FunctionKit::PositionMapHash(p2, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP3 = FunctionKit::PositionMapHash(p3, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP4 = FunctionKit::PositionMapHash(p4, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP5 = FunctionKit::PositionMapHash(p5, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP6 = FunctionKit::PositionMapHash(p6, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP7 = FunctionKit::PositionMapHash(p7, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP8 = FunctionKit::PositionMapHash(p8, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+
+		//		np1->InitializationPVS(p1, hashValueP1, mass_np, pi->density);//需要添加构造函数（至少）：mass，position，velocity, density
+		//		np2->InitializationPVS(p2, hashValueP2, mass_np, pi->density);
+		//		np3->InitializationPVS(p3, hashValueP3, mass_np, pi->density);
+		//		np4->InitializationPVS(p4, hashValueP4, mass_np, pi->density);
+		//		np5->InitializationPVS(p5, hashValueP5, mass_np, pi->density);
+		//		np6->InitializationPVS(p6, hashValueP6, mass_np, pi->density);
+		//		np7->InitializationPVS(p7, hashValueP7, mass_np, pi->density);
+		//		np8->InitializationPVS(p8, hashValueP8, mass_np, pi->density);
+
+		//		np1->β = 0.5;
+		//		np2->β = 0.5;
+		//		np3->β = 0.5;
+		//		np4->β = 0.5;
+		//		np5->β = 0.5;
+		//		np6->β = 0.5;
+		//		np7->β = 0.5;
+		//		np8->β = 0.5;
+
+		//		fluidModel.particleList.push_back(np1);
+		//		fluidModel.particleList.push_back(np2);
+		//		fluidModel.particleList.push_back(np3);
+		//		fluidModel.particleList.push_back(np4);
+		//		fluidModel.particleList.push_back(np5);
+		//		fluidModel.particleList.push_back(np6);
+		//		fluidModel.particleList.push_back(np7);
+		//		fluidModel.particleList.push_back(np8);
+
+
+		//		//删除粒子部分代码开始标志--------------------------------------------------------------------------------------------
+		//		//删除i粒子，需要先删除所有指向i粒子的指针，1、粒子表的指针；2、其邻居指向的指针。然后删除i粒子，pi指向设为空
+		//		{
+		//			//遍历i粒子的j个邻居，对于邻居j（邻居是相互的）：j粒子的邻居中有i粒子的指针，遍历j粒子的邻居k，删除其指向i的指针，新增其指向生成粒子的指针
+		//			//aa
+		//			for (int j = 0; j < pi->fluidNeighbors.size(); j++)
+		//			{
+		//				if (pi->fluidNeighbors[j] == NULL)
+		//				{
+		//					continue;
+		//				}
+
+		//				IISPHParticle *pj = pi->fluidNeighbors[j];
+		//				for (int k = 0; k < pj->fluidNeighbors.size(); k++)
+		//				{
+		//					if (pj->fluidNeighbors[k] == NULL)
+		//					{
+		//						continue;
+		//					}
+
+		//					IISPHParticle *pk = pj->fluidNeighbors[k];
+		//					if (pk == pi)
+		//					{
+		//						pj->fluidNeighbors[k] = NULL;
+		//						pj->fluidNeighbors.push_back(np1);
+		//						pj->fluidNeighbors.push_back(np2);
+		//						pj->fluidNeighbors.push_back(np3);
+		//						pj->fluidNeighbors.push_back(np4);
+		//						pj->fluidNeighbors.push_back(np5);
+		//						pj->fluidNeighbors.push_back(np6);
+		//						pj->fluidNeighbors.push_back(np7);
+		//						pj->fluidNeighbors.push_back(np8);
+
+		//					}
+		//				}
+
+		//			}
+		//			delete fluidModel.particleList[i];
+		//			fluidModel.particleList[i] = NULL;
+		//		}
+
+		//		//删除粒子部分代码结束标志----------------------------------------------------------------------------------------------------
+		//	}
+
+		//	if (num_np == 9)
+		//	{
+		//		cout << "99999999999999999999999999999999999999999999" << endl;
+
+		//		double r_Spliting = 0.3*pi->particleSupportRad;//新生成的粒子所在球面的半径，0.3为取得自定义的值，此处用来测试
+		//		double mass_np = pi->particleMass / num_np;
+		//		double c = 1.0 / sqrt(3.0)*r_Spliting;
+
+		//		IISPHParticle *np1 = new IISPHParticle(*pi);
+		//		IISPHParticle *np2 = new IISPHParticle(*pi);
+		//		IISPHParticle *np3 = new IISPHParticle(*pi);
+		//		IISPHParticle *np4 = new IISPHParticle(*pi);
+		//		IISPHParticle *np5 = new IISPHParticle(*pi);
+		//		IISPHParticle *np6 = new IISPHParticle(*pi);
+		//		IISPHParticle *np7 = new IISPHParticle(*pi);
+		//		IISPHParticle *np8 = new IISPHParticle(*pi);
+		//		IISPHParticle *np9 = new IISPHParticle(*pi);
+
+		//		np1->lastPressure = pi->pressure;
+		//		np2->lastPressure = pi->pressure;
+		//		np3->lastPressure = pi->pressure;
+		//		np4->lastPressure = pi->pressure;
+		//		np5->lastPressure = pi->pressure;
+		//		np6->lastPressure = pi->pressure;
+		//		np7->lastPressure = pi->pressure;
+		//		np8->lastPressure = pi->pressure;
+		//		np9->lastPressure = pi->pressure;
+
+		//		Vector3f p1, p2, p3, p4, p5, p6, p7, p8, p9;
+		//		p1.SetValue(c + pi->position.x, c + pi->position.y, c + pi->position.z);
+		//		p2.SetValue(-c + pi->position.x, c + pi->position.y, c + pi->position.z);
+		//		p3.SetValue(c + pi->position.x, -c + pi->position.y, c + pi->position.z);
+		//		p4.SetValue(c + pi->position.x, c + pi->position.y, -c + pi->position.z);
+		//		p5.SetValue(-c + pi->position.x, -c + pi->position.y, c + pi->position.z);
+		//		p6.SetValue(-c + pi->position.x, c + pi->position.y, -c + pi->position.z);
+		//		p7.SetValue(c + pi->position.x, -c + pi->position.y, -c + pi->position.z);
+		//		p8.SetValue(-c + pi->position.x, -c + pi->position.y, -c + pi->position.z);
+		//		p9.SetValue(0 + pi->position.x, 0 + pi->position.y, 0 + pi->position.z);
+
+		//		int hashValueP1 = FunctionKit::PositionMapHash(p1, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP2 = FunctionKit::PositionMapHash(p2, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP3 = FunctionKit::PositionMapHash(p3, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP4 = FunctionKit::PositionMapHash(p4, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP5 = FunctionKit::PositionMapHash(p5, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP6 = FunctionKit::PositionMapHash(p6, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP7 = FunctionKit::PositionMapHash(p7, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP8 = FunctionKit::PositionMapHash(p8, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+		//		int hashValueP9 = FunctionKit::PositionMapHash(p9, SharedData::GetCellLength(), SharedData::GetHashCellNum(), boundary.offset); //得到当前position所对应的哈希值
+
+		//		np1->InitializationPVS(p1, hashValueP1, mass_np, pi->density);//需要添加构造函数（至少）：mass，position，velocity, density
+		//		np2->InitializationPVS(p2, hashValueP2, mass_np, pi->density);
+		//		np3->InitializationPVS(p3, hashValueP3, mass_np, pi->density);
+		//		np4->InitializationPVS(p4, hashValueP4, mass_np, pi->density);
+		//		np5->InitializationPVS(p5, hashValueP5, mass_np, pi->density);
+		//		np6->InitializationPVS(p6, hashValueP6, mass_np, pi->density);
+		//		np7->InitializationPVS(p7, hashValueP7, mass_np, pi->density);
+		//		np8->InitializationPVS(p8, hashValueP8, mass_np, pi->density);
+		//		np9->InitializationPVS(p9, hashValueP9, mass_np, pi->density);
+
+		//		np1->β = 0.5;
+		//		np2->β = 0.5;
+		//		np3->β = 0.5;
+		//		np4->β = 0.5;
+		//		np5->β = 0.5;
+		//		np6->β = 0.5;
+		//		np7->β = 0.5;
+		//		np8->β = 0.5;
+		//		np9->β = 0.5;
+
+		//		fluidModel.particleList.push_back(np1);
+		//		fluidModel.particleList.push_back(np2);
+		//		fluidModel.particleList.push_back(np3);
+		//		fluidModel.particleList.push_back(np4);
+		//		fluidModel.particleList.push_back(np5);
+		//		fluidModel.particleList.push_back(np6);
+		//		fluidModel.particleList.push_back(np7);
+		//		fluidModel.particleList.push_back(np8);
+		//		fluidModel.particleList.push_back(np9);
+
+
+		//		//删除粒子部分代码开始标志--------------------------------------------------------------------------------------------
+		//		//删除i粒子，需要先删除所有指向i粒子的指针，1、粒子表的指针；2、其邻居指向的指针。然后删除i粒子，pi指向设为空
+		//		{
+		//			//遍历i粒子的j个邻居，对于邻居j（邻居是相互的）：j粒子的邻居中有i粒子的指针，遍历j粒子的邻居k，删除其指向i的指针，新增其指向生成粒子的指针
+		//			//aa
+		//			for (int j = 0; j < pi->fluidNeighbors.size(); j++)
+		//			{
+		//				if (pi->fluidNeighbors[j] == NULL)
+		//				{
+		//					continue;
+		//				}
+
+		//				IISPHParticle *pj = pi->fluidNeighbors[j];
+		//				for (int k = 0; k < pj->fluidNeighbors.size(); k++)
+		//				{
+		//					if (pj->fluidNeighbors[k] == NULL)
+		//					{
+		//						continue;
+		//					}
+
+		//					IISPHParticle *pk = pj->fluidNeighbors[k];
+		//					if (pk == pi)
+		//					{
+		//						pj->fluidNeighbors[k] = NULL;
+		//						pj->fluidNeighbors.push_back(np1);
+		//						pj->fluidNeighbors.push_back(np2);
+		//						pj->fluidNeighbors.push_back(np3);
+		//						pj->fluidNeighbors.push_back(np4);
+		//						pj->fluidNeighbors.push_back(np5);
+		//						pj->fluidNeighbors.push_back(np6);
+		//						pj->fluidNeighbors.push_back(np7);
+		//						pj->fluidNeighbors.push_back(np8);
+		//						pj->fluidNeighbors.push_back(np9);
+
+		//					}
+		//				}
+
+		//			}
+		//			delete fluidModel.particleList[i];
+		//			fluidModel.particleList[i] = NULL;
+		//		}
+
+		//		//删除粒子部分代码结束标志----------------------------------------------------------------------------------------------------
+		//	}
+
+		//}
 
 
 
